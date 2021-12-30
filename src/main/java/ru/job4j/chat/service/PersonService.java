@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 import ru.job4j.chat.model.Person;
 import ru.job4j.chat.repository.PersonRepository;
 
+import java.util.Optional;
+
 @Service
 public class PersonService {
     private final PersonRepository personRepository;
@@ -26,5 +28,9 @@ public class PersonService {
 
     public void deleteById(int id) {
         personRepository.deleteById(id);
+    }
+
+    public Optional<Person> findByUsername(String username) {
+       return personRepository.findByUsername(username);
     }
 }

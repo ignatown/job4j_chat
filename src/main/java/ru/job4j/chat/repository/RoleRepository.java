@@ -5,4 +5,5 @@ import ru.job4j.chat.model.Role;
 
 public interface RoleRepository extends CrudRepository<Role, Integer> {
     Role findById(int id);
+    Role findByName(String name);
 }
