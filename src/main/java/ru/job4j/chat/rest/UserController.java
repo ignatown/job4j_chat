@@ -29,6 +29,10 @@ public class UserController {
 
     @PostMapping("/sign-up")
     public Person signUp(@RequestBody Person person) {
+        if (person.getUsername() == null
+                || person.getPassword() == null) {
+            throw new NullPointerException("All fields must be filled in");
+        }
         person.setPassword(encoder.encode(person.getPassword()));
         person.setRole(roleService.findRoleByName("ROLE_USER"));
         personService.savePerson(person);

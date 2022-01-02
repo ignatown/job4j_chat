@@ -3,6 +3,7 @@ package ru.job4j.chat.rest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.chat.model.Person;
 import ru.job4j.chat.service.PersonService;
 
@@ -23,13 +24,21 @@ public class PersonController {
     @GetMapping("/{id}")
     public ResponseEntity<Person> findById(@PathVariable int id) {
         Person person = personService.findById(id);
+        if (person == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "The user with this id does not exist"
+            );
+        }
         return new ResponseEntity<>(
-                person, person != null ? HttpStatus.OK : HttpStatus.NOT_FOUND
+                person, HttpStatus.OK
         );
     }
 
     @PostMapping({"/", ""})
     public ResponseEntity<Person> savePerson(@RequestBody Person person) {
+        if (person.getPassword() == null || person.getUsername() == null) {
+            throw new NullPointerException("All fields must be filled in");
+        }
         return new ResponseEntity<>(
                 personService.savePerson(person), HttpStatus.CREATED);
     }

@@ -3,6 +3,7 @@ package ru.job4j.chat.rest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.chat.model.Role;
 import ru.job4j.chat.model.Room;
 import ru.job4j.chat.service.RoomService;
@@ -24,13 +25,20 @@ public class RoomController {
     @GetMapping("/{id}")
     public ResponseEntity<Room> findById(@PathVariable int id) {
         Room room = roomService.findById(id);
+        if (room == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "There is no room with this id");
+        }
         return new ResponseEntity<>(
-                room, room != null ? HttpStatus.OK : HttpStatus.NOT_FOUND
+                room, HttpStatus.OK
         );
     }
 
     @PostMapping({"/", ""})
     public ResponseEntity<Room> saveRoom(@RequestBody Room room) {
+        if (room.getName() == null) {
+            throw new NullPointerException("The room must have a name");
+        }
         return new ResponseEntity<>(
                 roomService.saveRoom(room), HttpStatus.CREATED);
     }

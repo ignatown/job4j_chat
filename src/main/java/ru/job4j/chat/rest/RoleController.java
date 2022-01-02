@@ -3,6 +3,7 @@ package ru.job4j.chat.rest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.chat.model.Role;
 import ru.job4j.chat.service.RoleService;
 
@@ -23,13 +24,21 @@ public class RoleController {
     @GetMapping("/{id}")
     public ResponseEntity<Role> findById(@PathVariable int id) {
          Role role = roleService.findById(id);
+        if (role == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "The role with this id was not found"
+            );
+        }
         return new ResponseEntity<>(
-                    role, role != null ? HttpStatus.OK : HttpStatus.NOT_FOUND
+                    role,  HttpStatus.OK
         );
     }
 
     @PostMapping({"/", ""})
     public ResponseEntity<Role> saveRole(@RequestBody Role role) {
+        if (role.getName() == null) {
+            throw new NullPointerException("The role must have a name");
+        }
         return new ResponseEntity<>(
                 roleService.saveRole(role), HttpStatus.CREATED);
     }
