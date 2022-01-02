@@ -28,9 +28,10 @@ public class UserController {
     }
 
     @PostMapping("/sign-up")
-    public void signUp(@RequestBody Person person) {
+    public Person signUp(@RequestBody Person person) {
         person.setPassword(encoder.encode(person.getPassword()));
         person.setRole(roleService.findRoleByName("ROLE_USER"));
         personService.savePerson(person);
+        return person;
     }
 }
