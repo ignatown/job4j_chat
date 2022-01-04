@@ -5,7 +5,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.chat.model.Person;
+import ru.job4j.chat.service.Patcher;
 import ru.job4j.chat.service.PersonService;
+
+import java.lang.reflect.InvocationTargetException;
 
 @RestController
 @RequestMapping("/person")
@@ -55,5 +58,18 @@ public class PersonController {
     public ResponseEntity<Void> deletePerson(@PathVariable int id) {
         personService.deleteById(id);
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/")
+    public ResponseEntity<Person> patch(@RequestBody Person person) throws InvocationTargetException, IllegalAccessException {
+        Person patchablePerson = personService.findById(person.getId());
+        if (patchablePerson == null) {
+            throw new IllegalArgumentException("Person with this id is not found");
+        }
+        Patcher.patch(patchablePerson, person);
+        return new ResponseEntity<>(
+                personService.savePerson(patchablePerson),
+                HttpStatus.OK
+        );
     }
 }

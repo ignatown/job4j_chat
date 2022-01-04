@@ -7,7 +7,9 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.chat.model.Message;
 import ru.job4j.chat.model.Person;
 import ru.job4j.chat.service.MessageService;
+import ru.job4j.chat.service.Patcher;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
@@ -60,5 +62,18 @@ public class MessageController {
     public ResponseEntity<Void> deleteMessage(@PathVariable int id) {
         messageService.deleteById(id);
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/")
+    public ResponseEntity<Message> patch(@RequestBody Message message) throws InvocationTargetException, IllegalAccessException {
+        Message patchableMessage = messageService.findById(message.getId());
+        if (patchableMessage == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        Patcher.patch(patchableMessage, message);
+        return new ResponseEntity<>(
+                messageService.saveMessage(patchableMessage),
+                HttpStatus.OK
+        );
     }
 }
