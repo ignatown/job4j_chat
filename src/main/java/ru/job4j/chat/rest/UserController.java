@@ -6,6 +6,8 @@ import ru.job4j.chat.model.Person;
 import ru.job4j.chat.service.PersonService;
 import ru.job4j.chat.service.RoleService;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("users")
 public class UserController {
@@ -28,11 +30,7 @@ public class UserController {
     }
 
     @PostMapping("/sign-up")
-    public Person signUp(@RequestBody Person person) {
-        if (person.getUsername() == null
-                || person.getPassword() == null) {
-            throw new NullPointerException("All fields must be filled in");
-        }
+    public Person signUp(@RequestBody @Valid Person person) {
         person.setPassword(encoder.encode(person.getPassword()));
         person.setRole(roleService.findRoleByName("ROLE_USER"));
         personService.savePerson(person);

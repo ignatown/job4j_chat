@@ -8,6 +8,7 @@ import ru.job4j.chat.model.Person;
 import ru.job4j.chat.service.Patcher;
 import ru.job4j.chat.service.PersonService;
 
+import javax.validation.Valid;
 import java.lang.reflect.InvocationTargetException;
 
 @RestController
@@ -38,7 +39,7 @@ public class PersonController {
     }
 
     @PostMapping({"/", ""})
-    public ResponseEntity<Person> savePerson(@RequestBody Person person) {
+    public ResponseEntity<Person> savePerson(@RequestBody @Valid Person person) {
         if (person.getPassword() == null || person.getUsername() == null) {
             throw new NullPointerException("All fields must be filled in");
         }
@@ -47,7 +48,7 @@ public class PersonController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Person> updatePerson(@PathVariable int id, @RequestBody Person person) {
+    public ResponseEntity<Person> updatePerson(@PathVariable int id, @RequestBody @Valid Person person) {
         person.setId(id);
         Person newPerson = personService.savePerson(person);
         return new ResponseEntity<>(newPerson,
@@ -61,7 +62,7 @@ public class PersonController {
     }
 
     @PatchMapping("/")
-    public ResponseEntity<Person> patch(@RequestBody Person person) throws InvocationTargetException, IllegalAccessException {
+    public ResponseEntity<Person> patch(@RequestBody @Valid Person person) throws InvocationTargetException, IllegalAccessException {
         Person patchablePerson = personService.findById(person.getId());
         if (patchablePerson == null) {
             throw new IllegalArgumentException("Person with this id is not found");

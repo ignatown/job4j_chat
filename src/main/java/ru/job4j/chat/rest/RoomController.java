@@ -8,6 +8,7 @@ import ru.job4j.chat.model.Room;
 import ru.job4j.chat.service.Patcher;
 import ru.job4j.chat.service.RoomService;
 
+import javax.validation.Valid;
 import java.lang.reflect.InvocationTargetException;
 
 @RestController
@@ -37,7 +38,7 @@ public class RoomController {
     }
 
     @PostMapping({"/", ""})
-    public ResponseEntity<Room> saveRoom(@RequestBody Room room) {
+    public ResponseEntity<Room> saveRoom(@RequestBody @Valid Room room) {
         if (room.getName() == null) {
             throw new NullPointerException("The room must have a name");
         }
@@ -46,7 +47,7 @@ public class RoomController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Room> updateRoom(@PathVariable int id, @RequestBody Room room) {
+    public ResponseEntity<Room> updateRoom(@PathVariable int id, @RequestBody @Valid Room room) {
         room.setId(id);
         Room newRoom = roomService.saveRoom(room);
         return new ResponseEntity<>(newRoom,
@@ -60,7 +61,7 @@ public class RoomController {
     }
 
     @PatchMapping("/")
-    public ResponseEntity<Room> patch(@RequestBody Room room) throws InvocationTargetException, IllegalAccessException {
+    public ResponseEntity<Room> patch(@RequestBody @Valid Room room) throws InvocationTargetException, IllegalAccessException {
         Room patchableRoom = roomService.findById(room.getId());
         if (patchableRoom == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);

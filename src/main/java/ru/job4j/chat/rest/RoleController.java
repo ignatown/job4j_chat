@@ -7,6 +7,8 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.chat.model.Role;
 import ru.job4j.chat.service.RoleService;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/role")
 public class RoleController {
@@ -35,7 +37,7 @@ public class RoleController {
     }
 
     @PostMapping({"/", ""})
-    public ResponseEntity<Role> saveRole(@RequestBody Role role) {
+    public ResponseEntity<Role> saveRole(@RequestBody @Valid Role role) {
         if (role.getName() == null) {
             throw new NullPointerException("The role must have a name");
         }
@@ -44,7 +46,7 @@ public class RoleController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Role> updateRole(@PathVariable int id, @RequestBody Role role) {
+    public ResponseEntity<Role> updateRole(@PathVariable int id, @RequestBody @Valid Role role) {
         role.setId(id);
         Role newRole = roleService.saveRole(role);
         return new ResponseEntity<>(newRole,
